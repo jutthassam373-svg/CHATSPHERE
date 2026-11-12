@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101828">
+<title>CHATSPHERE</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+ background:#101828;
+ color:white;
+ font-family:Arial,sans-serif;
+ min-height:100vh;
+}
+
+header{
+ background:#172438;
+ padding:18px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ border-bottom:1px solid #29394e;
+}
+
+.logo{color:#25d9a0;font-size:23px;font-weight:bold}
+
+button{
+ border:0;
+ padding:12px 16px;
+ border-radius:9px;
+ cursor:pointer;
+ font-weight:bold;
+ background:#25d9a0;
+ color:#101828;
+ margin:5px;
+}
+
+input{
+ width:100%;
+ padding:13px;
+ margin:10px 0;
+ border:1px solid #34445b;
+ border-radius:9px;
+ background:#172438;
+ color:white;
+}
+
+.container{
+ max-width:500px;
+ margin:35px auto;
+ padding:20px;
+}
+
+.card{
+ background:#172438;
+ padding:22px;
+ border-radius:15px;
+ margin-bottom:18px;
+ border:1px solid #29394e;
+}
+
+h2{margin-bottom:15px;color:#25d9a0}
+
+small{color:#aab8ca}
+
+.hidden{display:none}
+
+.friend{
+ padding:13px;
+ background:#22334a;
+ border-radius:9px;
+ margin:8px 0;
+ cursor:pointer;
+}
+
+#messages{
+ height:250px;
+ overflow:auto;
+ background:#101c2c;
+ padding:12px;
+ border-radius:10px;
+ margin:10px 0;
+}
+
+.msg{
+ background:#176b55;
+ padding:10px;
+ border-radius:10px;
+ margin:7px;
+ max-width:85%;
+ margin-left:auto;
+ overflow-wrap:anywhere;
+}
+
+#chatInput{
+ display:flex;
+ gap:5px;
+}
+
+#chatInput input{flex:1}
+
+footer{
+ text-align:center;
+ padding:20px;
+ color:#8495aa;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">💬 CHATSPHERE</div>
+ <button id="installBtn" onclick="installApp()">
+ INSTALL APP
+ </button>
+</header>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div class="card" id="auth">
+ <h2>Welcome to CHATSPHERE</h2>
+ <p>Create your account or login.</p>
+
+ <input id="username" placeholder="Your Name">
+
+ <button onclick="signup()">CREATE ACCOUNT</button>
+
+ <p id="authMessage"></p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="hidden">
+
+ <div class="card">
+  <h2>My Profile</h2>
+  <p id="myName"></p>
+  <p>Your CHATSPHERE ID:</p>
+  <h2 id="myID"></h2>
+  <button onclick="copyID()">COPY ID</button>
+  <button onclick="logout()">LOGOUT</button>
+ </div>
+
+ <div class="card">
+  <h2>Add Friend</h2>
+  <input id="friendID" placeholder="Enter Friend's ID">
+  <button onclick="addFriend()">ADD FRIEND</button>
+  <p id="friendMessage"></p>
+ </div>
+
+ <div class="card">
+  <h2>My Friends</h2>
+  <div id="friends"></div>
+ </div>
+
+ <div class="card hidden" id="chat">
+  <h2 id="chatTitle">Chat</h2>
+
+  <div id="messages"></div>
+
+  <div id="chatInput">
+   <input id="message" placeholder="Write a message...">
+   <button onclick="sendMessage()">SEND</button>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>Communication</h2>
+  <button onclick="alert('Voice calling will be activated with WebRTC.')">📞 Voice Call</button>
+  <button onclick="alert('Video calling will be activated with WebRTC.')">📹 Video Call</button>
+  <button onclick="alert('Voice recording feature is coming soon.')">🎙️ Voice Message</button>
+ </div>
+
+</div>
+</div>
+
+<footer>
+ CHATSPHERE © 2026<br>
+ Connect Beyond Limits.
+</footer>
+
+<script>
+
+let user = JSON.parse(localStorage.getItem("cs_user"));
+let friends = JSON.parse(localStorage.getItem("cs_friends") || "[]");
+let currentFriend = null;
+
+function showApp(){
+ if(user){
+  document.getElementById("auth").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("myName").innerText="Name: "+user.name;
+  document.getElementById("myID").innerText=user.id;
+  showFriends();
+ }else{
+  document.getElementById("auth").classList.remove("hidden");
+  document.getElementById("dashboard").classList.add("hidden");
+ }
+}
+
+function signup(){
+ let name=document.getElementById("username").value.trim();
+
+ if(!name){
+  alert("Enter your name first!");
+  return;
+ }
+
+ user={
+  name:name,
+  id:"CS-"+Math.random().toString(36).substring(2,10).toUpperCase()
+ };
+
+ localStorage.setItem("cs_user",JSON.stringify(user));
+ showApp();
+}
+
+function copyID(){
+ navigator.clipboard.writeText(user.id)
+ .then(()=>alert("ID copied!"));
+}
+
+function addFriend(){
+ let id=document.getElementById("friendID").value.trim().toUpperCase();
+
+ if(!id || id===user.id){
+  alert("Enter a valid friend's ID.");
+  return;
+ }
+
+ if(friends.includes(id)){
+  alert("Friend already added!");
+  return;
+ }
+
+ friends.push(id);
+ localStorage.setItem("cs_friends",JSON.stringify(friends));
+
+ document.getElementById("friendID").value="";
+ document.getElementById("friendMessage").innerText="Friend ID saved!";
+ showFriends();
+}
+
+function showFriends(){
+ let box=document.getElementById("friends");
+ box.innerHTML="";
+
+ friends.forEach(id=>{
+  let div=document.createElement("div");
+  div.className="friend";
+  div.textContent="👤 "+id;
+  div.onclick=()=>openChat(id);
+  box.appendChild(div);
+ });
+}
+
+function openChat(id){
+ currentFriend=id;
+ document.getElementById("chat").classList.remove("hidden");
+ document.getElementById("chatTitle").innerText=id;
+ showMessages();
+}
+
+function showMessages(){
+ let key="cs_messages_"+currentFriend;
+ let data=JSON.parse(localStorage.getItem(key)||"[]");
+
+ let box=document.getElementById("messages");
+ box.innerHTML="";
+
+ data.forEach(m=>{
+  let div=document.createElement("div");
+  div.className="msg";
+  div.textContent=m;
+  box.appendChild(div);
+ });
+
+ box.scrollTop=box.scrollHeight;
+}
+
+function sendMessage(){
+ let input=document.getElementById("message");
+ let value=input.value.trim();
+
+ if(!value || !currentFriend)return;
+
+ let key="cs_messages_"+currentFriend;
+ let data=JSON.parse(localStorage.getItem(key)||"[]");
+
+ data.push(user.name+": "+value);
+
+ localStorage.setItem(key,JSON.stringify(data));
+
+ input.value="";
+ showMessages();
+}
+
+function logout(){
+ localStorage.removeItem("cs_user");
+ user=null;
+ showApp();
+}
+
+// INSTALL APP
+let deferredPrompt=null;
+
+window.addEventListener("beforeinstallprompt",e=>{
+ e.preventDefault();
+ deferredPrompt=e;
+ document.getElementById("installBtn").style.display="block";
+});
+
+async function installApp(){
+ if(deferredPrompt){
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt=null;
+ }else{
+  alert("Browser menu se Add to Home Screen ya Install App select karein. Full PWA installation ke liye manifest aur service worker bhi zaroori hain.");
+ }
+}
+
+showApp();
+
+</script>
+
+</body>
+</html>

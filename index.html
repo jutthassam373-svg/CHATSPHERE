@@ -5,12 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101828">
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg">
 <title>CHATSPHERE</title>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#101828;color:white;font-family:Arial,sans-serif;min-height:100vh}
-header{background:#172438;padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #29394e}
+body{background:#101828;color:white;font-family:Arial;min-height:100vh}
+header{background:#172438;padding:16px;display:flex;justify-content:space-between;align-items:center}
 .logo{color:#25d9a0;font-size:22px;font-weight:bold}
 button{border:0;padding:11px 14px;border-radius:9px;cursor:pointer;font-weight:bold;background:#25d9a0;color:#101828;margin:4px}
 input{width:100%;padding:13px;margin:8px 0;border:1px solid #34445b;border-radius:9px;background:#172438;color:white}
@@ -25,9 +26,9 @@ h2{color:#25d9a0;margin-bottom:13px}
 .mine{margin-left:auto;background:#176b55}
 #chatInput{display:flex;gap:5px}
 #chatInput input{flex:1}
-#callScreen{position:fixed;inset:0;background:#101828;z-index:10;padding:20px;text-align:center}
-video{width:100%;max-height:45vh;background:#000;border-radius:12px;margin:8px 0}
-#callScreen button{margin:8px}
+#callScreen{position:fixed;inset:0;background:#101828;z-index:10;padding:20px;text-align:center;overflow:auto}
+video{width:100%;max-height:40vh;background:#000;border-radius:12px;margin:8px 0;object-fit:cover}
+#remoteAudio{width:100%;margin:8px 0}
 footer{text-align:center;padding:20px;color:#8495aa}
 </style>
 </head>
@@ -35,517 +36,1018 @@ footer{text-align:center;padding:20px;color:#8495aa}
 <body>
 
 <header>
- <div class="logo">💬 CHATSPHERE</div>
- <button id="installBtn">📲 INSTALL APP</button>
+<div class="logo">💬 CHATSPHERE</div>
+<button id="installBtn">📲 INSTALL APP</button>
 </header>
 
 <div class="container">
 
 <section class="card" id="auth">
- <h2>Welcome to CHATSPHERE</h2>
- <input id="username" placeholder="Your name (signup only)">
- <input id="email" type="email" placeholder="Email address">
- <input id="password" type="password" placeholder="Password (minimum 6 characters)">
- <button id="signupBtn">CREATE ACCOUNT</button>
- <button id="loginBtn">LOGIN</button>
- <p class="status" id="authStatus"></p>
+<h2>Welcome to CHATSPHERE</h2>
+<input id="username" placeholder="Your name (signup only)">
+<input id="email" type="email" placeholder="Email address">
+<input id="password" type="password" placeholder="Password (minimum 6 characters)">
+<button id="signupBtn">CREATE ACCOUNT</button>
+<button id="loginBtn">LOGIN</button>
+<p class="status" id="authStatus"></p>
 </section>
 
 <section id="dashboard" class="hidden">
 
- <div class="card">
-  <h2>My Profile</h2>
-  <p id="myName"></p>
-  <p>Your CHATSPHERE ID:</p>
-  <h2 id="myID"></h2>
-  <button id="copyBtn">COPY ID</button>
-  <button id="logoutBtn">LOGOUT</button>
- </div>
+<div class="card">
+<h2>My Profile</h2>
+<p id="myName"></p>
+<p>Your CHATSPHERE ID:</p>
+<h2 id="myID"></h2>
+<button id="copyBtn">COPY ID</button>
+<button id="logoutBtn">LOGOUT</button>
+</div>
 
- <div class="card">
-  <h2>Add Friend</h2>
-  <input id="friendID" placeholder="Friend's CHATSPHERE ID">
-  <button id="addFriendBtn">SEND REQUEST</button>
-  <p id="friendStatus" class="status"></p>
- </div>
+<div class="card">
+<h2>Add Friend</h2>
+<input id="friendID" placeholder="Friend's CHATSPHERE ID">
+<button id="addFriendBtn">SEND REQUEST</button>
+<p id="friendStatus" class="status"></p>
+</div>
 
- <div class="card">
-  <h2>Friend Requests</h2>
-  <div id="requests"></div>
- </div>
+<div class="card">
+<h2>Friend Requests</h2>
+<div id="requests"></div>
+</div>
 
- <div class="card">
-  <h2>My Friends</h2>
-  <div id="friends"></div>
- </div>
+<div class="card">
+<h2>My Friends</h2>
+<div id="friends"></div>
+</div>
 
- <div class="card hidden" id="chat">
-  <h2 id="chatTitle">Chat</h2>
-  <div id="messages"></div>
-  <div id="chatInput">
-   <input id="message" placeholder="Write a message...">
-   <button id="sendBtn">SEND</button>
-  </div>
-  <hr style="margin:15px 0;border-color:#34445b">
-  <h2>Voice Message</h2>
-  <button id="recordBtn">🎙️ START RECORDING</button>
-  <p id="recordStatus" class="status"></p>
-  <div id="voiceMessages"></div>
-  <h2 style="margin-top:15px">Calls</h2>
-  <button id="voiceCallBtn">📞 VOICE CALL</button>
-  <button id="videoCallBtn">📹 VIDEO CALL</button>
- </div>
+<div class="card hidden" id="chat">
+<h2 id="chatTitle">Chat</h2>
+<div id="messages"></div>
+
+<div id="chatInput">
+<input id="message" placeholder="Write a message...">
+<button id="sendBtn">SEND</button>
+</div>
+
+<hr style="margin:15px 0;border-color:#34445b">
+
+<h2>Voice Message</h2>
+<button id="recordBtn">🎙️ START RECORDING</button>
+<p id="recordStatus" class="status"></p>
+<div id="voiceMessages"></div>
+
+<h2 style="margin-top:15px">Calls</h2>
+<button id="voiceCallBtn">📞 VOICE CALL</button>
+<button id="videoCallBtn">📹 VIDEO CALL</button>
+</div>
 
 </section>
 </div>
 
 <div id="callScreen" class="hidden">
- <h2 id="callTitle">CHATSPHERE CALL</h2>
- <p id="callStatus">Connecting...</p>
- <video id="remoteVideo" autoplay playsinline></video>
- <video id="localVideo" autoplay muted playsinline></video>
- <button id="acceptCallBtn" class="hidden">ACCEPT CALL</button>
- <button id="endCallBtn">END CALL</button>
+<h2 id="callTitle">CHATSPHERE CALL</h2>
+<p id="callStatus">Connecting...</p>
+
+<video id="remoteVideo" autoplay playsinline muted></video>
+<audio id="remoteAudio" autoplay playsinline controls></audio>
+<video id="localVideo" autoplay muted playsinline></video>
+
+<button id="acceptCallBtn" class="hidden">ACCEPT CALL</button>
+<button id="endCallBtn">END CALL</button>
 </div>
 
-<footer>CHATSPHERE © 2026<br>Connect Beyond Limits.</footer>
+<footer>
+CHATSPHERE © 2026<br>
+Connect Beyond Limits.
+</footer>
 
 <script type="module">
+
 import {createClient} from
 "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
 const supabase=createClient(
- "https://ebrkinuiadmthsjfvjex.supabase.co",
- "sb_publishable_TKubEAK3CWlU8oAFW7yMFg_f6JGTN7G"
+"https://ebrkinuiadmthsjfvjex.supabase.co",
+"sb_publishable_TKubEAK3CWlU8oAFW7yMFg_f6JGTN7G"
 );
 
 const $=id=>document.getElementById(id);
 
-let user=null,profile=null,currentFriend=null;
-let chatChannel=null,signalChannel=null;
-let recorder=null,recordedChunks=[];
-let localStream=null,peer=null,callMode="audio";
-let activeCallId=null,incomingCall=null;
+let user=null;
+let profile=null;
+let currentFriend=null;
+let chatChannel=null;
+let signalChannel=null;
+let recorder=null;
+let recordedChunks=[];
+let localStream=null;
+let peer=null;
 let deferredPrompt=null;
+let queuedIceCandidates=[];
 
-function status(id,message){$(id).textContent=message}
+/* AUTH */
+
+function status(id,msg){
+$(id).textContent=msg;
+}
 
 function showDashboard(){
- $("auth").classList.add("hidden");
- $("dashboard").classList.remove("hidden");
- $("myName").textContent="Name: "+profile.display_name;
- $("myID").textContent=profile.chat_id;
- loadRequests();
- loadFriends();
- startSignalListener();
+$("auth").classList.add("hidden");
+$("dashboard").classList.remove("hidden");
+
+$("myName").textContent="Name: "+profile.display_name;
+$("myID").textContent=profile.chat_id;
+
+loadRequests();
+loadFriends();
+startSignalListener();
 }
 
 async function loadProfile(){
- const {data,error}=await supabase.from("profiles")
- .select("*").eq("user_id",user.id).single();
- if(error)throw error;
- profile=data;
- showDashboard();
+const {data,error}=await supabase
+.from("profiles")
+.select("*")
+.eq("user_id",user.id)
+.single();
+
+if(error)throw error;
+
+profile=data;
+showDashboard();
 }
 
 async function signup(){
- const name=$("username").value.trim();
- const email=$("email").value.trim();
- const password=$("password").value;
 
- if(!name||!email||password.length<6){
-  status("authStatus","Name, email aur 6+ character password likho.");
-  return;
- }
+const name=$("username").value.trim();
+const email=$("email").value.trim();
+const password=$("password").value;
 
- status("authStatus","Account ban raha hai...");
- const {data,error}=await supabase.auth.signUp({
-  email,password,options:{data:{display_name:name}}
- });
+if(!name||!email||password.length<6){
+status("authStatus","Name, email aur 6+ character password likho.");
+return;
+}
 
- if(error){status("authStatus",error.message);return}
+status("authStatus","Account ban raha hai...");
 
- if(data.session){
-  user=data.user;
-  try{await loadProfile()}catch(e){status("authStatus",e.message)}
- }else{
-  status("authStatus","Email verification karo, phir login karo.");
- }
+const {data,error}=await supabase.auth.signUp({
+email,password,
+options:{data:{display_name:name}}
+});
+
+if(error){
+status("authStatus",error.message);
+return;
+}
+
+if(data.session){
+user=data.user;
+try{await loadProfile()}
+catch(e){status("authStatus",e.message)}
+}else{
+status("authStatus","Account ban gaya. Ab login karo.");
+}
 }
 
 async function login(){
- const email=$("email").value.trim();
- const password=$("password").value;
- if(!email||!password){status("authStatus","Email aur password likho.");return}
 
- status("authStatus","Login ho raha hai...");
- const {data,error}=await supabase.auth.signInWithPassword({email,password});
- if(error){status("authStatus",error.message);return}
- user=data.user;
- try{await loadProfile()}catch(e){status("authStatus",e.message)}
+const email=$("email").value.trim();
+const password=$("password").value;
+
+if(!email||!password){
+status("authStatus","Email aur password likho.");
+return;
+}
+
+status("authStatus","Login ho raha hai...");
+
+const {data,error}=await supabase.auth
+.signInWithPassword({email,password});
+
+if(error){
+status("authStatus",error.message);
+return;
+}
+
+user=data.user;
+
+try{await loadProfile()}
+catch(e){status("authStatus",e.message)}
 }
 
 async function logout(){
- await endCall(false);
- if(chatChannel)await supabase.removeChannel(chatChannel);
- if(signalChannel)await supabase.removeChannel(signalChannel);
- await supabase.auth.signOut();
- user=null;profile=null;currentFriend=null;
- $("dashboard").classList.add("hidden");
- $("auth").classList.remove("hidden");
- $("chat").classList.add("hidden");
+
+await endCall(false);
+
+if(chatChannel)await supabase.removeChannel(chatChannel);
+if(signalChannel)await supabase.removeChannel(signalChannel);
+
+await supabase.auth.signOut();
+
+user=null;
+profile=null;
+currentFriend=null;
+
+$("dashboard").classList.add("hidden");
+$("auth").classList.remove("hidden");
+$("chat").classList.add("hidden");
 }
 
+/* FRIEND REQUESTS */
+
 async function addFriend(){
- const id=$("friendID").value.trim().toUpperCase();
- if(!id||id===profile.chat_id){status("friendStatus","Valid ID likho.");return}
 
- status("friendStatus","Friend search ho raha hai...");
- const {data:p,error}=await supabase.from("profiles")
- .select("user_id,chat_id,display_name").eq("chat_id",id).maybeSingle();
+const id=$("friendID").value.trim().toUpperCase();
 
- if(error){status("friendStatus",error.message);return}
- if(!p){status("friendStatus","Ye ID nahi mili.");return}
+if(!id||id===profile.chat_id){
+status("friendStatus","Valid ID likho.");
+return;
+}
 
- const {data:old}=await supabase.from("friend_requests")
- .select("id,status")
- .or(`and(sender_id.eq.${user.id},receiver_id.eq.${p.user_id}),and(sender_id.eq.${p.user_id},receiver_id.eq.${user.id})`);
+status("friendStatus","Friend search ho raha hai...");
 
- if(old?.some(x=>x.status==="accepted")){
-  status("friendStatus","Ye pehle se friend hai.");return;
- }
- if(old?.some(x=>x.status==="pending")){
-  status("friendStatus","Request pehle se mojood hai.");return;
- }
+const {data:p,error}=await supabase
+.from("profiles")
+.select("user_id,chat_id,display_name")
+.eq("chat_id",id)
+.maybeSingle();
 
- const {error:e}=await supabase.from("friend_requests")
- .insert({sender_id:user.id,receiver_id:p.user_id});
+if(error){
+status("friendStatus",error.message);
+return;
+}
 
- status("friendStatus",e?e.message:"Friend request send ho gayi!");
- $("friendID").value="";
+if(!p){
+status("friendStatus","Ye ID nahi mili.");
+return;
+}
+
+const {data:old,error:oldError}=await supabase
+.from("friend_requests")
+.select("id,status,sender_id,receiver_id")
+.or(`and(sender_id.eq.${user.id},receiver_id.eq.${p.user_id}),and(sender_id.eq.${p.user_id},receiver_id.eq.${user.id})`);
+
+if(oldError){
+status("friendStatus",oldError.message);
+return;
+}
+
+if(old?.some(x=>x.status==="accepted")){
+status("friendStatus","Ye pehle se friend hai.");
+return;
+}
+
+const pending=old?.find(x=>x.status==="pending");
+
+if(pending){
+
+if(pending.sender_id===p.user_id){
+status("friendStatus","Is dost ki request tumhare paas hai. Friend Requests check karo.");
+}else{
+status("friendStatus","Request pehle se mojood hai.");
+}
+
+return;
+}
+
+const {error:e}=await supabase
+.from("friend_requests")
+.insert({
+sender_id:user.id,
+receiver_id:p.user_id
+});
+
+status("friendStatus",e?e.message:"Friend request send ho gayi!");
+
+if(!e)$("friendID").value="";
 }
 
 async function loadRequests(){
- const {data,error}=await supabase.from("friend_requests")
- .select("id,sender_id").eq("receiver_id",user.id).eq("status","pending");
 
- const box=$("requests");box.innerHTML="";
- if(error){box.textContent=error.message;return}
+const {data,error}=await supabase
+.from("friend_requests")
+.select("id,sender_id,status")
+.eq("receiver_id",user.id)
+.eq("status","pending");
 
- for(const r of data||[]){
-  const {data:p}=await supabase.from("profiles")
-  .select("display_name,chat_id").eq("user_id",r.sender_id).single();
-  if(!p)continue;
+const box=$("requests");
+box.innerHTML="";
 
-  const row=document.createElement("div");row.className="friend";
-  const label=document.createElement("span");
-  label.textContent=p.display_name+" ("+p.chat_id+") ";
+if(error){
+box.textContent=error.message;
+return;
+}
 
-  const btn=document.createElement("button");btn.textContent="ACCEPT";
-  btn.onclick=()=>respondRequest(r.id,"accepted");
+for(const r of data||[]){
 
-  const reject=document.createElement("button");reject.textContent="REJECT";
-  reject.onclick=()=>respondRequest(r.id,"rejected");
-  row.append(label,btn,reject);box.appendChild(row);
- }
- if(!box.children.length)box.textContent="No new requests.";
+const {data:p}=await supabase
+.from("profiles")
+.select("display_name,chat_id")
+.eq("user_id",r.sender_id)
+.single();
+
+if(!p)continue;
+
+const row=document.createElement("div");
+row.className="friend";
+
+const label=document.createElement("span");
+label.textContent=p.display_name+" ("+p.chat_id+") ";
+
+const accept=document.createElement("button");
+accept.textContent="ACCEPT";
+accept.onclick=()=>respondRequest(r.id,"accepted");
+
+const reject=document.createElement("button");
+reject.textContent="REJECT";
+reject.onclick=()=>respondRequest(r.id,"rejected");
+
+row.append(label,accept,reject);
+box.appendChild(row);
+}
+
+if(!box.children.length){
+box.textContent="No new requests.";
+}
 }
 
 async function respondRequest(id,state){
- const {error}=await supabase.from("friend_requests")
- .update({status:state}).eq("id",id);
- if(error){alert(error.message);return}
- loadRequests();loadFriends();
+
+const {error}=await supabase
+.from("friend_requests")
+.update({status:state})
+.eq("id",id);
+
+if(error){
+alert(error.message);
+return;
+}
+
+await loadRequests();
+await loadFriends();
 }
 
 async function loadFriends(){
- const {data,error}=await supabase.from("friend_requests")
- .select("sender_id,receiver_id").eq("status","accepted")
- .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
- const box=$("friends");box.innerHTML="";
- if(error){box.textContent=error.message;return}
+const {data,error}=await supabase
+.from("friend_requests")
+.select("sender_id,receiver_id")
+.eq("status","accepted")
+.or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
 
- for(const r of data||[]){
-  const fid=r.sender_id===user.id?r.receiver_id:r.sender_id;
-  const {data:p}=await supabase.from("profiles")
-  .select("user_id,display_name,chat_id").eq("user_id",fid).single();
-  if(!p)continue;
-  const row=document.createElement("div");row.className="friend";
-  row.textContent="👤 "+p.display_name+" ("+p.chat_id+")";
-  row.onclick=()=>openChat(p);box.appendChild(row);
- }
- if(!box.children.length)box.textContent="Abhi koi friend nahi.";
+const box=$("friends");
+box.innerHTML="";
+
+if(error){
+box.textContent=error.message;
+return;
 }
 
-async function openChat(friend){
- currentFriend=friend;
- $("chat").classList.remove("hidden");
- $("chatTitle").textContent="Chat with "+friend.display_name;
- if(chatChannel)await supabase.removeChannel(chatChannel);
- await loadMessages();await loadVoiceMessages();
+for(const r of data||[]){
 
- chatChannel=supabase.channel("messages-"+user.id)
- .on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},
- payload=>{
-  const m=payload.new;
-  if((m.sender_id===user.id&&m.receiver_id===friend.user_id)||
-     (m.sender_id===friend.user_id&&m.receiver_id===user.id))
-    loadMessages();
- }).subscribe();
+const fid=r.sender_id===user.id
+?r.receiver_id:r.sender_id;
+
+const {data:p}=await supabase
+.from("profiles")
+.select("user_id,display_name,chat_id")
+.eq("user_id",fid)
+.single();
+
+if(!p)continue;
+
+const row=document.createElement("div");
+row.className="friend";
+row.textContent="👤 "+p.display_name+" ("+p.chat_id+")";
+row.onclick=()=>openChat(p);
+
+box.appendChild(row);
+}
+
+if(!box.children.length){
+box.textContent="Abhi koi friend nahi.";
+}
+}
+
+/* TEXT CHAT */
+
+async function openChat(friend){
+
+currentFriend=friend;
+
+$("chat").classList.remove("hidden");
+$("chatTitle").textContent="Chat with "+friend.display_name;
+
+if(chatChannel)await supabase.removeChannel(chatChannel);
+
+await loadMessages();
+await loadVoiceMessages();
+
+chatChannel=supabase.channel("messages-"+user.id)
+.on("postgres_changes",{
+event:"INSERT",
+schema:"public",
+table:"messages"
+},payload=>{
+
+const m=payload.new;
+
+if(
+(m.sender_id===user.id&&m.receiver_id===friend.user_id)||
+(m.sender_id===friend.user_id&&m.receiver_id===user.id)
+){
+loadMessages();
+}
+
+}).subscribe();
 }
 
 async function loadMessages(){
- if(!currentFriend)return;
- const f=currentFriend.user_id;
- const {data,error}=await supabase.from("messages").select("*")
- .or(`and(sender_id.eq.${user.id},receiver_id.eq.${f}),and(sender_id.eq.${f},receiver_id.eq.${user.id})`)
- .order("created_at");
 
- const box=$("messages");box.innerHTML="";
- if(error){box.textContent=error.message;return}
- for(const m of data||[]){
-  const d=document.createElement("div");
-  d.className="msg "+(m.sender_id===user.id?"mine":"");
-  d.textContent=m.message;box.appendChild(d);
- }
- box.scrollTop=box.scrollHeight;
+if(!currentFriend)return;
+
+const f=currentFriend.user_id;
+
+const {data,error}=await supabase
+.from("messages")
+.select("*")
+.or(`and(sender_id.eq.${user.id},receiver_id.eq.${f}),and(sender_id.eq.${f},receiver_id.eq.${user.id})`)
+.order("created_at");
+
+const box=$("messages");
+box.innerHTML="";
+
+if(error){
+box.textContent=error.message;
+return;
+}
+
+for(const m of data||[]){
+
+const d=document.createElement("div");
+
+d.className="msg "+(m.sender_id===user.id?"mine":"");
+d.textContent=m.message;
+
+box.appendChild(d);
+}
+
+box.scrollTop=box.scrollHeight;
 }
 
 async function sendMessage(){
- const input=$("message"),value=input.value.trim();
- if(!value||!currentFriend)return;
- const {error}=await supabase.from("messages").insert({
-  sender_id:user.id,receiver_id:currentFriend.user_id,message:value
- });
- if(error){alert(error.message);return}
- input.value="";loadMessages();
+
+const input=$("message");
+const value=input.value.trim();
+
+if(!value||!currentFriend)return;
+
+const {error}=await supabase
+.from("messages")
+.insert({
+sender_id:user.id,
+receiver_id:currentFriend.user_id,
+message:value
+});
+
+if(error){
+alert(error.message);
+return;
 }
 
+input.value="";
+loadMessages();
+}
+
+/* VOICE MESSAGES */
+
 async function startRecording(){
- if(!currentFriend){alert("Pehle friend ki chat kholo.");return}
- try{
-  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-  recordedChunks=[];
-  recorder=new MediaRecorder(stream);
-  recorder.ondataavailable=e=>{if(e.data.size)recordedChunks.push(e.data)};
-  recorder.onstop=async()=>{
-   stream.getTracks().forEach(t=>t.stop());
-   const blob=new Blob(recordedChunks,{type:recorder.mimeType||"audio/webm"});
-   await uploadVoice(blob);
-  };
-  recorder.start();
-  $("recordBtn").textContent="⏹ STOP RECORDING";
-  status("recordStatus","Recording chal rahi hai...");
- }catch(e){status("recordStatus","Microphone error: "+e.message)}
+
+if(!currentFriend){
+alert("Pehle friend ki chat kholo.");
+return;
+}
+
+try{
+
+const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+
+recordedChunks=[];
+
+recorder=new MediaRecorder(stream);
+
+recorder.ondataavailable=e=>{
+if(e.data.size)recordedChunks.push(e.data);
+};
+
+recorder.onstop=async()=>{
+
+stream.getTracks().forEach(t=>t.stop());
+
+const blob=new Blob(recordedChunks,{
+type:recorder.mimeType||"audio/webm"
+});
+
+await uploadVoice(blob);
+};
+
+recorder.start();
+
+$("recordBtn").textContent="⏹ STOP RECORDING";
+status("recordStatus","Recording chal rahi hai...");
+
+}catch(e){
+status("recordStatus","Microphone error: "+e.message);
+}
 }
 
 function stopRecording(){
- if(recorder&&recorder.state==="recording"){
-  recorder.stop();
-  $("recordBtn").textContent="🎙️ START RECORDING";
-  status("recordStatus","Voice upload ho rahi hai...");
- }
+
+if(recorder&&recorder.state==="recording"){
+
+recorder.stop();
+
+$("recordBtn").textContent="🎙️ START RECORDING";
+status("recordStatus","Voice upload ho rahi hai...");
+}
 }
 
 async function uploadVoice(blob){
- const path=user.id+"/"+crypto.randomUUID()+".webm";
- const {error}=await supabase.storage.from("voice-messages").upload(path,blob,{
-  contentType:blob.type||"audio/webm"
- });
- if(error){status("recordStatus",error.message);return}
 
- const {error:e}=await supabase.from("voice_messages").insert({
-  sender_id:user.id,receiver_id:currentFriend.user_id,file_path:path
- });
- if(e){status("recordStatus",e.message);return}
- status("recordStatus","Voice message send ho gaya!");
- loadVoiceMessages();
+const path=user.id+"/"+crypto.randomUUID()+".webm";
+
+const {error}=await supabase.storage
+.from("voice-messages")
+.upload(path,blob,{
+contentType:blob.type||"audio/webm"
+});
+
+if(error){
+status("recordStatus",error.message);
+return;
+}
+
+const {error:e}=await supabase
+.from("voice_messages")
+.insert({
+sender_id:user.id,
+receiver_id:currentFriend.user_id,
+file_path:path
+});
+
+if(e){
+status("recordStatus",e.message);
+return;
+}
+
+status("recordStatus","Voice message send ho gaya!");
+
+loadVoiceMessages();
 }
 
 async function loadVoiceMessages(){
- if(!currentFriend)return;
- const f=currentFriend.user_id;
- const {data,error}=await supabase.from("voice_messages").select("*")
- .or(`and(sender_id.eq.${user.id},receiver_id.eq.${f}),and(sender_id.eq.${f},receiver_id.eq.${user.id})`)
- .order("created_at");
 
- const box=$("voiceMessages");box.innerHTML="";
- if(error){box.textContent=error.message;return}
- for(const v of data||[]){
-  const {data:urlData,error:e}=await supabase.storage
-  .from("voice-messages").createSignedUrl(v.file_path,3600);
-  if(e)continue;
-  const row=document.createElement("div");row.className="friend";
-  row.textContent=v.sender_id===user.id?"You sent a voice message":"Voice message";
-  const audio=document.createElement("audio");
-  audio.controls=true;audio.src=urlData.signedUrl;
-  audio.style.width="100%";
-  row.appendChild(audio);box.appendChild(row);
- }
+if(!currentFriend)return;
+
+const f=currentFriend.user_id;
+
+const {data,error}=await supabase
+.from("voice_messages")
+.select("*")
+.or(`and(sender_id.eq.${user.id},receiver_id.eq.${f}),and(sender_id.eq.${f},receiver_id.eq.${user.id})`)
+.order("created_at");
+
+const box=$("voiceMessages");
+box.innerHTML="";
+
+if(error){
+box.textContent=error.message;
+return;
 }
 
-/* WebRTC calling */
+for(const v of data||[]){
+
+const {data:urlData,error:e}=await supabase.storage
+.from("voice-messages")
+.createSignedUrl(v.file_path,3600);
+
+if(e)continue;
+
+const row=document.createElement("div");
+row.className="friend";
+row.textContent=v.sender_id===user.id
+?"You sent a voice message":"Voice message";
+
+const audio=document.createElement("audio");
+audio.controls=true;
+audio.src=urlData.signedUrl;
+audio.style.width="100%";
+
+row.appendChild(audio);
+box.appendChild(row);
+}
+}
+
+/* VOICE / VIDEO CALLS */
 
 function sendSignal(receiver,payload){
- return supabase.from("call_signals").insert({
-  caller_id:user.id,receiver_id:receiver,payload
- });
+
+return supabase.from("call_signals").insert({
+caller_id:user.id,
+receiver_id:receiver,
+payload
+});
 }
 
 async function createPeer(friend,mode){
- callMode=mode;
- peer=new RTCPeerConnection({
-  iceServers:[{urls:"stun:stun.l.google.com:19302"}]
- });
 
- peer.onicecandidate=e=>{
-  if(e.candidate&&currentFriend)
-   sendSignal(currentFriend.user_id,{type:"ice",candidate:e.candidate});
- };
+peer=new RTCPeerConnection({
+iceServers:[
+{urls:"stun:stun.l.google.com:19302"}
+]
+});
 
- peer.ontrack=e=>{
-  $("remoteVideo").srcObject=e.streams[0];
- };
+peer.onicecandidate=e=>{
 
- peer.onconnectionstatechange=()=>{
-  $("callStatus").textContent="Call: "+peer.connectionState;
- };
+if(e.candidate&&currentFriend){
 
- localStream=await navigator.mediaDevices.getUserMedia({
-  audio:true,video:mode==="video"
- });
- localStream.getTracks().forEach(t=>peer.addTrack(t,localStream));
- $("localVideo").srcObject=localStream;
- $("localVideo").style.display=mode==="video"?"block":"none";
- $("remoteVideo").style.display=mode==="video"?"block":"none";
- $("callScreen").classList.remove("hidden");
- $("callTitle").textContent=mode==="video"?"VIDEO CALL":"VOICE CALL";
+sendSignal(
+currentFriend.user_id,
+{type:"ice",candidate:e.candidate.toJSON()}
+);
+
+}
+};
+
+peer.ontrack=async e=>{
+
+let stream=e.streams[0];
+
+if(!stream){
+stream=new MediaStream([e.track]);
+}
+
+$("remoteVideo").srcObject=stream;
+$("remoteAudio").srcObject=stream;
+
+try{
+await $("remoteAudio").play();
+}catch(err){
+console.log("Audio playback blocked. Play button dabao.",err);
+}
+
+if(mode==="video"){
+try{
+await $("remoteVideo").play();
+}catch(err){
+console.log(err);
+}
+}
+
+};
+
+peer.onconnectionstatechange=()=>{
+
+if(peer){
+$("callStatus").textContent="Call: "+peer.connectionState;
+}
+
+};
+
+localStream=await navigator.mediaDevices.getUserMedia({
+audio:true,
+video:mode==="video"
+});
+
+localStream.getTracks().forEach(track=>{
+peer.addTrack(track,localStream);
+});
+
+$("localVideo").srcObject=localStream;
+
+$("localVideo").style.display=mode==="video"?"block":"none";
+$("remoteVideo").style.display=mode==="video"?"block":"none";
+$("remoteAudio").style.display=mode==="audio"?"block":"none";
+
+$("callScreen").classList.remove("hidden");
+
+$("callTitle").textContent=
+mode==="video"?"VIDEO CALL":"VOICE CALL";
+}
+
+async function applyQueuedIce(){
+
+if(!peer||!peer.remoteDescription)return;
+
+for(const candidate of queuedIceCandidates){
+
+try{
+await peer.addIceCandidate(
+new RTCIceCandidate(candidate)
+);
+}catch(e){
+console.warn("ICE error",e);
+}
+
+}
+
+queuedIceCandidates=[];
 }
 
 async function startCall(mode){
- if(!currentFriend){alert("Pehle friend ki chat kholo.");return}
- try{
-  await createPeer(currentFriend,mode);
-  const offer=await peer.createOffer();
-  await peer.setLocalDescription(offer);
-  const result=await sendSignal(currentFriend.user_id,{
-   type:"offer",sdp:offer,mode
-  });
-  if(result.error)throw result.error;
-  activeCallId=Date.now().toString();
-  $("callStatus").textContent="Calling "+currentFriend.display_name+"...";
- }catch(e){
-  alert("Call start nahi hui: "+e.message);
-  await endCall(false);
- }
+
+if(!currentFriend){
+alert("Pehle friend ki chat kholo.");
+return;
+}
+
+try{
+
+await createPeer(currentFriend,mode);
+
+const offer=await peer.createOffer();
+
+await peer.setLocalDescription(offer);
+
+const result=await sendSignal(
+currentFriend.user_id,
+{type:"offer",sdp:offer,mode}
+);
+
+if(result.error)throw result.error;
+
+$("callStatus").textContent=
+"Calling "+currentFriend.display_name+"...";
+
+}catch(e){
+
+alert("Call start nahi hui: "+e.message);
+await endCall(false);
+
+}
 }
 
 async function startSignalListener(){
- if(signalChannel)await supabase.removeChannel(signalChannel);
 
- signalChannel=supabase.channel("calls-"+user.id)
- .on("postgres_changes",{event:"INSERT",schema:"public",table:"call_signals"},
- async payload=>{
-  const s=payload.new;
-  if(s.receiver_id!==user.id)return;
-  await handleSignal(s);
- }).subscribe();
+if(signalChannel){
+await supabase.removeChannel(signalChannel);
+}
+
+signalChannel=supabase.channel("calls-"+user.id)
+
+.on("postgres_changes",{
+event:"INSERT",
+schema:"public",
+table:"call_signals"
+},async payload=>{
+
+const s=payload.new;
+
+if(s.receiver_id!==user.id)return;
+
+await handleSignal(s);
+
+}).subscribe();
 }
 
 async function handleSignal(signal){
- const p=signal.payload;
- if(!p)return;
 
- if(p.type==="offer"){
-  if(peer){await sendSignal(signal.caller_id,{type:"busy"});return}
-  const {data:friend}=await supabase.from("profiles")
-  .select("user_id,display_name,chat_id").eq("user_id",signal.caller_id).single();
-  if(!friend)return;
-  currentFriend=friend;incomingCall={caller:signal.caller_id,mode:p.mode};
-  $("callTitle").textContent=p.mode==="video"?"INCOMING VIDEO CALL":"INCOMING VOICE CALL";
-  $("callStatus").textContent=friend.display_name+" is calling...";
-  $("acceptCallBtn").classList.remove("hidden");
-  $("callScreen").classList.remove("hidden");
-  $("acceptCallBtn").onclick=()=>acceptCall(signal.caller_id,p);
- }
- else if(p.type==="answer"&&peer){
-  await peer.setRemoteDescription(new RTCSessionDescription(p.sdp));
- }
- else if(p.type==="ice"&&peer){
-  try{await peer.addIceCandidate(new RTCIceCandidate(p.candidate))}catch(e){}
- }
- else if(p.type==="hangup"){
-  await endCall(false);
-  $("callStatus").textContent="Call ended.";
- }
+const p=signal.payload;
+
+if(!p)return;
+
+if(p.type==="offer"){
+
+if(peer){
+await sendSignal(signal.caller_id,{type:"busy"});
+return;
+}
+
+const {data:friend}=await supabase
+.from("profiles")
+.select("user_id,display_name,chat_id")
+.eq("user_id",signal.caller_id)
+.single();
+
+if(!friend)return;
+
+currentFriend=friend;
+
+$("callTitle").textContent=
+p.mode==="video"?"INCOMING VIDEO CALL":"INCOMING VOICE CALL";
+
+$("callStatus").textContent=friend.display_name+" is calling...";
+
+$("acceptCallBtn").classList.remove("hidden");
+$("callScreen").classList.remove("hidden");
+
+$("acceptCallBtn").onclick=()=>acceptCall(signal.caller_id,p);
+
+}
+
+else if(p.type==="answer"&&peer){
+
+await peer.setRemoteDescription(
+new RTCSessionDescription(p.sdp)
+);
+
+await applyQueuedIce();
+
+}
+
+else if(p.type==="ice"){
+
+if(peer&&peer.remoteDescription){
+
+try{
+await peer.addIceCandidate(
+new RTCIceCandidate(p.candidate)
+);
+}catch(e){
+console.warn(e);
+}
+
+}else{
+
+queuedIceCandidates.push(p.candidate);
+
+}
+
+}
+
+else if(p.type==="hangup"){
+
+await endCall(false);
+$("callStatus").textContent="Call ended.";
+
+}
+
+else if(p.type==="busy"){
+
+$("callStatus").textContent="Friend is busy.";
+
+}
+
 }
 
 async function acceptCall(caller,p){
- try{
-  const {data:friend}=await supabase.from("profiles")
-  .select("user_id,display_name,chat_id").eq("user_id",caller).single();
-  currentFriend=friend;
-  await createPeer(friend,p.mode);
-  await peer.setRemoteDescription(new RTCSessionDescription(p.sdp));
-  const answer=await peer.createAnswer();
-  await peer.setLocalDescription(answer);
-  await sendSignal(caller,{type:"answer",sdp:answer});
-  $("acceptCallBtn").classList.add("hidden");
-  $("callStatus").textContent="Connected";
-  incomingCall=null;
- }catch(e){alert("Call accept nahi hui: "+e.message);endCall(false)}
+
+try{
+
+const {data:friend,error}=await supabase
+.from("profiles")
+.select("user_id,display_name,chat_id")
+.eq("user_id",caller)
+.single();
+
+if(error||!friend){
+throw error||new Error("Friend profile nahi mila.");
+}
+
+currentFriend=friend;
+
+await createPeer(friend,p.mode);
+
+await peer.setRemoteDescription(
+new RTCSessionDescription(p.sdp)
+);
+
+await applyQueuedIce();
+
+const answer=await peer.createAnswer();
+
+await peer.setLocalDescription(answer);
+
+const result=await sendSignal(caller,{
+type:"answer",
+sdp:answer
+});
+
+if(result.error)throw result.error;
+
+$("acceptCallBtn").classList.add("hidden");
+$("callStatus").textContent="Call connected.";
+
+}catch(e){
+
+alert("Call accept nahi hui: "+e.message);
+await endCall(false);
+
+}
+
 }
 
 async function endCall(notify=true){
- if(notify&&currentFriend&&peer)
-  await sendSignal(currentFriend.user_id,{type:"hangup"});
 
- if(peer){peer.close();peer=null}
- if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}
- $("localVideo").srcObject=null;
- $("remoteVideo").srcObject=null;
- $("callScreen").classList.add("hidden");
- $("acceptCallBtn").classList.add("hidden");
- incomingCall=null;activeCallId=null;
+const friend=currentFriend;
+
+if(notify&&friend&&peer){
+await sendSignal(friend.user_id,{type:"hangup"});
 }
 
-/* Buttons */
+if(peer){
+peer.close();
+peer=null;
+}
+
+if(localStream){
+localStream.getTracks().forEach(t=>t.stop());
+localStream=null;
+}
+
+$("localVideo").srcObject=null;
+$("remoteVideo").srcObject=null;
+$("remoteAudio").srcObject=null;
+
+$("callScreen").classList.add("hidden");
+$("acceptCallBtn").classList.add("hidden");
+
+queuedIceCandidates=[];
+}
+
+/* BUTTONS */
+
 $("signupBtn").onclick=signup;
 $("loginBtn").onclick=login;
 $("logoutBtn").onclick=logout;
 $("addFriendBtn").onclick=addFriend;
-$("copyBtn").onclick=()=>navigator.clipboard.writeText(profile.chat_id).then(()=>alert("ID copied!"));
+
+$("copyBtn").onclick=()=>{
+
+navigator.clipboard.writeText(profile.chat_id)
+.then(()=>alert("ID copied!"))
+.catch(()=>alert("Your ID: "+profile.chat_id));
+
+};
+
 $("sendBtn").onclick=sendMessage;
-$("message").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
-$("recordBtn").onclick=()=>recorder&&recorder.state==="recording"?stopRecording():startRecording();
+
+$("message").addEventListener("keydown",e=>{
+if(e.key==="Enter")sendMessage();
+});
+
+$("recordBtn").onclick=()=>{
+
+if(recorder&&recorder.state==="recording"){
+stopRecording();
+}else{
+startRecording();
+}
+
+};
+
 $("voiceCallBtn").onclick=()=>startCall("audio");
 $("videoCallBtn").onclick=()=>startCall("video");
 $("endCallBtn").onclick=()=>endCall(true);
 
-/* Install app */
+/* INSTALL APP */
+
 window.addEventListener("beforeinstallprompt",e=>{
- e.preventDefault();deferredPrompt=e;
+e.preventDefault();
+deferredPrompt=e;
 });
+
 $("installBtn").onclick=async()=>{
- if(deferredPrompt){
-  deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
-  deferredPrompt=null;
- }else{
-  alert("Install option browser menu mein check karo. PWA files bhi add honi chahiye.");
- }
+
+if(deferredPrompt){
+
+deferredPrompt.prompt();
+await deferredPrompt.userChoice;
+deferredPrompt=null;
+
+}else{
+
+alert("Chrome menu mein Install app ya Add to Home Screen check karo.");
+
+}
+
 };
 
+/* SERVICE WORKER */
+
 if("serviceWorker" in navigator){
- navigator.serviceWorker.register("./sw.js").catch(console.error);
+
+navigator.serviceWorker
+.register("./sw.js")
+.catch(console.error);
+
 }
 
+/* SESSION */
+
 const {data:{session}}=await supabase.auth.getSession();
+
 if(session){
- user=session.user;
- try{await loadProfile()}catch(e){status("authStatus",e.message)}
+
+user=session.user;
+
+try{
+await loadProfile();
+}catch(e){
+status("authStatus",e.message);
 }
+
+}
+
 </script>
 </body>
 </html>

@@ -2,112 +2,33 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101828">
+<link rel="manifest" href="manifest.json">
 <title>CHATSPHERE</title>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-
-body{
- background:#101828;
- color:white;
- font-family:Arial,sans-serif;
- min-height:100vh;
-}
-
-header{
- background:#172438;
- padding:18px;
- display:flex;
- justify-content:space-between;
- align-items:center;
- border-bottom:1px solid #29394e;
-}
-
-.logo{color:#25d9a0;font-size:23px;font-weight:bold}
-
-button{
- border:0;
- padding:12px 16px;
- border-radius:9px;
- cursor:pointer;
- font-weight:bold;
- background:#25d9a0;
- color:#101828;
- margin:5px;
-}
-
-input{
- width:100%;
- padding:13px;
- margin:10px 0;
- border:1px solid #34445b;
- border-radius:9px;
- background:#172438;
- color:white;
-}
-
-.container{
- max-width:500px;
- margin:35px auto;
- padding:20px;
-}
-
-.card{
- background:#172438;
- padding:22px;
- border-radius:15px;
- margin-bottom:18px;
- border:1px solid #29394e;
-}
-
-h2{margin-bottom:15px;color:#25d9a0}
-
-small{color:#aab8ca}
-
-.hidden{display:none}
-
-.friend{
- padding:13px;
- background:#22334a;
- border-radius:9px;
- margin:8px 0;
- cursor:pointer;
-}
-
-#messages{
- height:250px;
- overflow:auto;
- background:#101c2c;
- padding:12px;
- border-radius:10px;
- margin:10px 0;
-}
-
-.msg{
- background:#176b55;
- padding:10px;
- border-radius:10px;
- margin:7px;
- max-width:85%;
- margin-left:auto;
- overflow-wrap:anywhere;
-}
-
-#chatInput{
- display:flex;
- gap:5px;
-}
-
+body{background:#101828;color:white;font-family:Arial,sans-serif;min-height:100vh}
+header{background:#172438;padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #29394e}
+.logo{color:#25d9a0;font-size:22px;font-weight:bold}
+button{border:0;padding:11px 14px;border-radius:9px;cursor:pointer;font-weight:bold;background:#25d9a0;color:#101828;margin:4px}
+input{width:100%;padding:13px;margin:8px 0;border:1px solid #34445b;border-radius:9px;background:#172438;color:white}
+.container{max-width:600px;margin:25px auto;padding:12px}
+.card{background:#172438;padding:18px;border-radius:15px;margin-bottom:16px;border:1px solid #29394e}
+h2{color:#25d9a0;margin-bottom:13px}
+.hidden{display:none!important}
+.status{color:#25d9a0;margin-top:10px;overflow-wrap:anywhere}
+.friend{padding:13px;background:#22334a;border-radius:9px;margin:8px 0;cursor:pointer}
+#messages{height:280px;overflow:auto;background:#101c2c;padding:12px;border-radius:10px;margin:10px 0}
+.msg{padding:10px;border-radius:10px;margin:7px;max-width:85%;overflow-wrap:anywhere;background:#34445b}
+.mine{margin-left:auto;background:#176b55}
+#chatInput{display:flex;gap:5px}
 #chatInput input{flex:1}
-
-footer{
- text-align:center;
- padding:20px;
- color:#8495aa;
-}
-
+#callScreen{position:fixed;inset:0;background:#101828;z-index:10;padding:20px;text-align:center}
+video{width:100%;max-height:45vh;background:#000;border-radius:12px;margin:8px 0}
+#callScreen button{margin:8px}
+footer{text-align:center;padding:20px;color:#8495aa}
 </style>
 </head>
 
@@ -115,42 +36,42 @@ footer{
 
 <header>
  <div class="logo">💬 CHATSPHERE</div>
- <button id="installBtn" onclick="installApp()">
- INSTALL APP
- </button>
+ <button id="installBtn">📲 INSTALL APP</button>
 </header>
 
 <div class="container">
 
-<!-- LOGIN -->
-<div class="card" id="auth">
+<section class="card" id="auth">
  <h2>Welcome to CHATSPHERE</h2>
- <p>Create your account or login.</p>
+ <input id="username" placeholder="Your name (signup only)">
+ <input id="email" type="email" placeholder="Email address">
+ <input id="password" type="password" placeholder="Password (minimum 6 characters)">
+ <button id="signupBtn">CREATE ACCOUNT</button>
+ <button id="loginBtn">LOGIN</button>
+ <p class="status" id="authStatus"></p>
+</section>
 
- <input id="username" placeholder="Your Name">
-
- <button onclick="signup()">CREATE ACCOUNT</button>
-
- <p id="authMessage"></p>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard" class="hidden">
+<section id="dashboard" class="hidden">
 
  <div class="card">
   <h2>My Profile</h2>
   <p id="myName"></p>
   <p>Your CHATSPHERE ID:</p>
   <h2 id="myID"></h2>
-  <button onclick="copyID()">COPY ID</button>
-  <button onclick="logout()">LOGOUT</button>
+  <button id="copyBtn">COPY ID</button>
+  <button id="logoutBtn">LOGOUT</button>
  </div>
 
  <div class="card">
   <h2>Add Friend</h2>
-  <input id="friendID" placeholder="Enter Friend's ID">
-  <button onclick="addFriend()">ADD FRIEND</button>
-  <p id="friendMessage"></p>
+  <input id="friendID" placeholder="Friend's CHATSPHERE ID">
+  <button id="addFriendBtn">SEND REQUEST</button>
+  <p id="friendStatus" class="status"></p>
+ </div>
+
+ <div class="card">
+  <h2>Friend Requests</h2>
+  <div id="requests"></div>
  </div>
 
  <div class="card">
@@ -160,174 +81,471 @@ footer{
 
  <div class="card hidden" id="chat">
   <h2 id="chatTitle">Chat</h2>
-
   <div id="messages"></div>
-
   <div id="chatInput">
    <input id="message" placeholder="Write a message...">
-   <button onclick="sendMessage()">SEND</button>
+   <button id="sendBtn">SEND</button>
   </div>
+  <hr style="margin:15px 0;border-color:#34445b">
+  <h2>Voice Message</h2>
+  <button id="recordBtn">🎙️ START RECORDING</button>
+  <p id="recordStatus" class="status"></p>
+  <div id="voiceMessages"></div>
+  <h2 style="margin-top:15px">Calls</h2>
+  <button id="voiceCallBtn">📞 VOICE CALL</button>
+  <button id="videoCallBtn">📹 VIDEO CALL</button>
  </div>
 
- <div class="card">
-  <h2>Communication</h2>
-  <button onclick="alert('Voice calling will be activated with WebRTC.')">📞 Voice Call</button>
-  <button onclick="alert('Video calling will be activated with WebRTC.')">📹 Video Call</button>
-  <button onclick="alert('Voice recording feature is coming soon.')">🎙️ Voice Message</button>
- </div>
-
-</div>
+</section>
 </div>
 
-<footer>
- CHATSPHERE © 2026<br>
- Connect Beyond Limits.
-</footer>
+<div id="callScreen" class="hidden">
+ <h2 id="callTitle">CHATSPHERE CALL</h2>
+ <p id="callStatus">Connecting...</p>
+ <video id="remoteVideo" autoplay playsinline></video>
+ <video id="localVideo" autoplay muted playsinline></video>
+ <button id="acceptCallBtn" class="hidden">ACCEPT CALL</button>
+ <button id="endCallBtn">END CALL</button>
+</div>
 
-<script>
+<footer>CHATSPHERE © 2026<br>Connect Beyond Limits.</footer>
 
-let user = JSON.parse(localStorage.getItem("cs_user"));
-let friends = JSON.parse(localStorage.getItem("cs_friends") || "[]");
-let currentFriend = null;
+<script type="module">
+import {createClient} from
+"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-function showApp(){
- if(user){
-  document.getElementById("auth").classList.add("hidden");
-  document.getElementById("dashboard").classList.remove("hidden");
-  document.getElementById("myName").innerText="Name: "+user.name;
-  document.getElementById("myID").innerText=user.id;
-  showFriends();
+const supabase=createClient(
+ "https://ebrkinuiadmthsjfvjex.supabase.co",
+ "sb_publishable_TKubEAK3CWlU8oAFW7yMFg_f6JGTN7G"
+);
+
+const $=id=>document.getElementById(id);
+
+let user=null,profile=null,currentFriend=null;
+let chatChannel=null,signalChannel=null;
+let recorder=null,recordedChunks=[];
+let localStream=null,peer=null,callMode="audio";
+let activeCallId=null,incomingCall=null;
+let deferredPrompt=null;
+
+function status(id,message){$(id).textContent=message}
+
+function showDashboard(){
+ $("auth").classList.add("hidden");
+ $("dashboard").classList.remove("hidden");
+ $("myName").textContent="Name: "+profile.display_name;
+ $("myID").textContent=profile.chat_id;
+ loadRequests();
+ loadFriends();
+ startSignalListener();
+}
+
+async function loadProfile(){
+ const {data,error}=await supabase.from("profiles")
+ .select("*").eq("user_id",user.id).single();
+ if(error)throw error;
+ profile=data;
+ showDashboard();
+}
+
+async function signup(){
+ const name=$("username").value.trim();
+ const email=$("email").value.trim();
+ const password=$("password").value;
+
+ if(!name||!email||password.length<6){
+  status("authStatus","Name, email aur 6+ character password likho.");
+  return;
+ }
+
+ status("authStatus","Account ban raha hai...");
+ const {data,error}=await supabase.auth.signUp({
+  email,password,options:{data:{display_name:name}}
+ });
+
+ if(error){status("authStatus",error.message);return}
+
+ if(data.session){
+  user=data.user;
+  try{await loadProfile()}catch(e){status("authStatus",e.message)}
  }else{
-  document.getElementById("auth").classList.remove("hidden");
-  document.getElementById("dashboard").classList.add("hidden");
+  status("authStatus","Email verification karo, phir login karo.");
  }
 }
 
-function signup(){
- let name=document.getElementById("username").value.trim();
+async function login(){
+ const email=$("email").value.trim();
+ const password=$("password").value;
+ if(!email||!password){status("authStatus","Email aur password likho.");return}
 
- if(!name){
-  alert("Enter your name first!");
-  return;
+ status("authStatus","Login ho raha hai...");
+ const {data,error}=await supabase.auth.signInWithPassword({email,password});
+ if(error){status("authStatus",error.message);return}
+ user=data.user;
+ try{await loadProfile()}catch(e){status("authStatus",e.message)}
+}
+
+async function logout(){
+ await endCall(false);
+ if(chatChannel)await supabase.removeChannel(chatChannel);
+ if(signalChannel)await supabase.removeChannel(signalChannel);
+ await supabase.auth.signOut();
+ user=null;profile=null;currentFriend=null;
+ $("dashboard").classList.add("hidden");
+ $("auth").classList.remove("hidden");
+ $("chat").classList.add("hidden");
+}
+
+async function addFriend(){
+ const id=$("friendID").value.trim().toUpperCase();
+ if(!id||id===profile.chat_id){status("friendStatus","Valid ID likho.");return}
+
+ status("friendStatus","Friend search ho raha hai...");
+ const {data:p,error}=await supabase.from("profiles")
+ .select("user_id,chat_id,display_name").eq("chat_id",id).maybeSingle();
+
+ if(error){status("friendStatus",error.message);return}
+ if(!p){status("friendStatus","Ye ID nahi mili.");return}
+
+ const {data:old}=await supabase.from("friend_requests")
+ .select("id,status")
+ .or(`and(sender_id.eq.${user.id},receiver_id.eq.${p.user_id}),and(sender_id.eq.${p.user_id},receiver_id.eq.${user.id})`);
+
+ if(old?.some(x=>x.status==="accepted")){
+  status("friendStatus","Ye pehle se friend hai.");return;
+ }
+ if(old?.some(x=>x.status==="pending")){
+  status("friendStatus","Request pehle se mojood hai.");return;
  }
 
- user={
-  name:name,
-  id:"CS-"+Math.random().toString(36).substring(2,10).toUpperCase()
- };
+ const {error:e}=await supabase.from("friend_requests")
+ .insert({sender_id:user.id,receiver_id:p.user_id});
 
- localStorage.setItem("cs_user",JSON.stringify(user));
- showApp();
+ status("friendStatus",e?e.message:"Friend request send ho gayi!");
+ $("friendID").value="";
 }
 
-function copyID(){
- navigator.clipboard.writeText(user.id)
- .then(()=>alert("ID copied!"));
-}
+async function loadRequests(){
+ const {data,error}=await supabase.from("friend_requests")
+ .select("id,sender_id").eq("receiver_id",user.id).eq("status","pending");
 
-function addFriend(){
- let id=document.getElementById("friendID").value.trim().toUpperCase();
+ const box=$("requests");box.innerHTML="";
+ if(error){box.textContent=error.message;return}
 
- if(!id || id===user.id){
-  alert("Enter a valid friend's ID.");
-  return;
+ for(const r of data||[]){
+  const {data:p}=await supabase.from("profiles")
+  .select("display_name,chat_id").eq("user_id",r.sender_id).single();
+  if(!p)continue;
+
+  const row=document.createElement("div");row.className="friend";
+  const label=document.createElement("span");
+  label.textContent=p.display_name+" ("+p.chat_id+") ";
+
+  const btn=document.createElement("button");btn.textContent="ACCEPT";
+  btn.onclick=()=>respondRequest(r.id,"accepted");
+
+  const reject=document.createElement("button");reject.textContent="REJECT";
+  reject.onclick=()=>respondRequest(r.id,"rejected");
+  row.append(label,btn,reject);box.appendChild(row);
  }
+ if(!box.children.length)box.textContent="No new requests.";
+}
 
- if(friends.includes(id)){
-  alert("Friend already added!");
-  return;
+async function respondRequest(id,state){
+ const {error}=await supabase.from("friend_requests")
+ .update({status:state}).eq("id",id);
+ if(error){alert(error.message);return}
+ loadRequests();loadFriends();
+}
+
+async function loadFriends(){
+ const {data,error}=await supabase.from("friend_requests")
+ .select("sender_id,receiver_id").eq("status","accepted")
+ .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`);
+
+ const box=$("friends");box.innerHTML="";
+ if(error){box.textContent=error.message;return}
+
+ for(const r of data||[]){
+  const fid=r.sender_id===user.id?r.receiver_id:r.sender_id;
+  const {data:p}=await supabase.from("profiles")
+  .select("user_id,display_name,chat_id").eq("user_id",fid).single();
+  if(!p)continue;
+  const row=document.createElement("div");row.className="friend";
+  row.textContent="👤 "+p.display_name+" ("+p.chat_id+")";
+  row.onclick=()=>openChat(p);box.appendChild(row);
  }
-
- friends.push(id);
- localStorage.setItem("cs_friends",JSON.stringify(friends));
-
- document.getElementById("friendID").value="";
- document.getElementById("friendMessage").innerText="Friend ID saved!";
- showFriends();
+ if(!box.children.length)box.textContent="Abhi koi friend nahi.";
 }
 
-function showFriends(){
- let box=document.getElementById("friends");
- box.innerHTML="";
+async function openChat(friend){
+ currentFriend=friend;
+ $("chat").classList.remove("hidden");
+ $("chatTitle").textContent="Chat with "+friend.display_name;
+ if(chatChannel)await supabase.removeChannel(chatChannel);
+ await loadMessages();await loadVoiceMessages();
 
- friends.forEach(id=>{
-  let div=document.createElement("div");
-  div.className="friend";
-  div.textContent="👤 "+id;
-  div.onclick=()=>openChat(id);
-  box.appendChild(div);
- });
+ chatChannel=supabase.channel("messages-"+user.id)
+ .on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},
+ payload=>{
+  const m=payload.new;
+  if((m.sender_id===user.id&&m.receiver_id===friend.user_id)||
+     (m.sender_id===friend.user_id&&m.receiver_id===user.id))
+    loadMessages();
+ }).subscribe();
 }
 
-function openChat(id){
- currentFriend=id;
- document.getElementById("chat").classList.remove("hidden");
- document.getElementById("chatTitle").innerText=id;
- showMessages();
-}
+async function loadMessages(){
+ if(!currentFriend)return;
+ const f=currentFriend.user_id;
+ const {data,error}=await supabase.from("messages").select("*")
+ .or(`and(sender_id.eq.${user.id},receiver_id.eq.${f}),and(sender_id.eq.${f},receiver_id.eq.${user.id})`)
+ .order("created_at");
 
-function showMessages(){
- let key="cs_messages_"+currentFriend;
- let data=JSON.parse(localStorage.getItem(key)||"[]");
-
- let box=document.getElementById("messages");
- box.innerHTML="";
-
- data.forEach(m=>{
-  let div=document.createElement("div");
-  div.className="msg";
-  div.textContent=m;
-  box.appendChild(div);
- });
-
+ const box=$("messages");box.innerHTML="";
+ if(error){box.textContent=error.message;return}
+ for(const m of data||[]){
+  const d=document.createElement("div");
+  d.className="msg "+(m.sender_id===user.id?"mine":"");
+  d.textContent=m.message;box.appendChild(d);
+ }
  box.scrollTop=box.scrollHeight;
 }
 
-function sendMessage(){
- let input=document.getElementById("message");
- let value=input.value.trim();
-
- if(!value || !currentFriend)return;
-
- let key="cs_messages_"+currentFriend;
- let data=JSON.parse(localStorage.getItem(key)||"[]");
-
- data.push(user.name+": "+value);
-
- localStorage.setItem(key,JSON.stringify(data));
-
- input.value="";
- showMessages();
+async function sendMessage(){
+ const input=$("message"),value=input.value.trim();
+ if(!value||!currentFriend)return;
+ const {error}=await supabase.from("messages").insert({
+  sender_id:user.id,receiver_id:currentFriend.user_id,message:value
+ });
+ if(error){alert(error.message);return}
+ input.value="";loadMessages();
 }
 
-function logout(){
- localStorage.removeItem("cs_user");
- user=null;
- showApp();
+async function startRecording(){
+ if(!currentFriend){alert("Pehle friend ki chat kholo.");return}
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  recordedChunks=[];
+  recorder=new MediaRecorder(stream);
+  recorder.ondataavailable=e=>{if(e.data.size)recordedChunks.push(e.data)};
+  recorder.onstop=async()=>{
+   stream.getTracks().forEach(t=>t.stop());
+   const blob=new Blob(recordedChunks,{type:recorder.mimeType||"audio/webm"});
+   await uploadVoice(blob);
+  };
+  recorder.start();
+  $("recordBtn").textContent="⏹ STOP RECORDING";
+  status("recordStatus","Recording chal rahi hai...");
+ }catch(e){status("recordStatus","Microphone error: "+e.message)}
 }
 
-// INSTALL APP
-let deferredPrompt=null;
+function stopRecording(){
+ if(recorder&&recorder.state==="recording"){
+  recorder.stop();
+  $("recordBtn").textContent="🎙️ START RECORDING";
+  status("recordStatus","Voice upload ho rahi hai...");
+ }
+}
 
+async function uploadVoice(blob){
+ const path=user.id+"/"+crypto.randomUUID()+".webm";
+ const {error}=await supabase.storage.from("voice-messages").upload(path,blob,{
+  contentType:blob.type||"audio/webm"
+ });
+ if(error){status("recordStatus",error.message);return}
+
+ const {error:e}=await supabase.from("voice_messages").insert({
+  sender_id:user.id,receiver_id:currentFriend.user_id,file_path:path
+ });
+ if(e){status("recordStatus",e.message);return}
+ status("recordStatus","Voice message send ho gaya!");
+ loadVoiceMessages();
+}
+
+async function loadVoiceMessages(){
+ if(!currentFriend)return;
+ const f=currentFriend.user_id;
+ const {data,error}=await supabase.from("voice_messages").select("*")
+ .or(`and(sender_id.eq.${user.id},receiver_id.eq.${f}),and(sender_id.eq.${f},receiver_id.eq.${user.id})`)
+ .order("created_at");
+
+ const box=$("voiceMessages");box.innerHTML="";
+ if(error){box.textContent=error.message;return}
+ for(const v of data||[]){
+  const {data:urlData,error:e}=await supabase.storage
+  .from("voice-messages").createSignedUrl(v.file_path,3600);
+  if(e)continue;
+  const row=document.createElement("div");row.className="friend";
+  row.textContent=v.sender_id===user.id?"You sent a voice message":"Voice message";
+  const audio=document.createElement("audio");
+  audio.controls=true;audio.src=urlData.signedUrl;
+  audio.style.width="100%";
+  row.appendChild(audio);box.appendChild(row);
+ }
+}
+
+/* WebRTC calling */
+
+function sendSignal(receiver,payload){
+ return supabase.from("call_signals").insert({
+  caller_id:user.id,receiver_id:receiver,payload
+ });
+}
+
+async function createPeer(friend,mode){
+ callMode=mode;
+ peer=new RTCPeerConnection({
+  iceServers:[{urls:"stun:stun.l.google.com:19302"}]
+ });
+
+ peer.onicecandidate=e=>{
+  if(e.candidate&&currentFriend)
+   sendSignal(currentFriend.user_id,{type:"ice",candidate:e.candidate});
+ };
+
+ peer.ontrack=e=>{
+  $("remoteVideo").srcObject=e.streams[0];
+ };
+
+ peer.onconnectionstatechange=()=>{
+  $("callStatus").textContent="Call: "+peer.connectionState;
+ };
+
+ localStream=await navigator.mediaDevices.getUserMedia({
+  audio:true,video:mode==="video"
+ });
+ localStream.getTracks().forEach(t=>peer.addTrack(t,localStream));
+ $("localVideo").srcObject=localStream;
+ $("localVideo").style.display=mode==="video"?"block":"none";
+ $("remoteVideo").style.display=mode==="video"?"block":"none";
+ $("callScreen").classList.remove("hidden");
+ $("callTitle").textContent=mode==="video"?"VIDEO CALL":"VOICE CALL";
+}
+
+async function startCall(mode){
+ if(!currentFriend){alert("Pehle friend ki chat kholo.");return}
+ try{
+  await createPeer(currentFriend,mode);
+  const offer=await peer.createOffer();
+  await peer.setLocalDescription(offer);
+  const result=await sendSignal(currentFriend.user_id,{
+   type:"offer",sdp:offer,mode
+  });
+  if(result.error)throw result.error;
+  activeCallId=Date.now().toString();
+  $("callStatus").textContent="Calling "+currentFriend.display_name+"...";
+ }catch(e){
+  alert("Call start nahi hui: "+e.message);
+  await endCall(false);
+ }
+}
+
+async function startSignalListener(){
+ if(signalChannel)await supabase.removeChannel(signalChannel);
+
+ signalChannel=supabase.channel("calls-"+user.id)
+ .on("postgres_changes",{event:"INSERT",schema:"public",table:"call_signals"},
+ async payload=>{
+  const s=payload.new;
+  if(s.receiver_id!==user.id)return;
+  await handleSignal(s);
+ }).subscribe();
+}
+
+async function handleSignal(signal){
+ const p=signal.payload;
+ if(!p)return;
+
+ if(p.type==="offer"){
+  if(peer){await sendSignal(signal.caller_id,{type:"busy"});return}
+  const {data:friend}=await supabase.from("profiles")
+  .select("user_id,display_name,chat_id").eq("user_id",signal.caller_id).single();
+  if(!friend)return;
+  currentFriend=friend;incomingCall={caller:signal.caller_id,mode:p.mode};
+  $("callTitle").textContent=p.mode==="video"?"INCOMING VIDEO CALL":"INCOMING VOICE CALL";
+  $("callStatus").textContent=friend.display_name+" is calling...";
+  $("acceptCallBtn").classList.remove("hidden");
+  $("callScreen").classList.remove("hidden");
+  $("acceptCallBtn").onclick=()=>acceptCall(signal.caller_id,p);
+ }
+ else if(p.type==="answer"&&peer){
+  await peer.setRemoteDescription(new RTCSessionDescription(p.sdp));
+ }
+ else if(p.type==="ice"&&peer){
+  try{await peer.addIceCandidate(new RTCIceCandidate(p.candidate))}catch(e){}
+ }
+ else if(p.type==="hangup"){
+  await endCall(false);
+  $("callStatus").textContent="Call ended.";
+ }
+}
+
+async function acceptCall(caller,p){
+ try{
+  const {data:friend}=await supabase.from("profiles")
+  .select("user_id,display_name,chat_id").eq("user_id",caller).single();
+  currentFriend=friend;
+  await createPeer(friend,p.mode);
+  await peer.setRemoteDescription(new RTCSessionDescription(p.sdp));
+  const answer=await peer.createAnswer();
+  await peer.setLocalDescription(answer);
+  await sendSignal(caller,{type:"answer",sdp:answer});
+  $("acceptCallBtn").classList.add("hidden");
+  $("callStatus").textContent="Connected";
+  incomingCall=null;
+ }catch(e){alert("Call accept nahi hui: "+e.message);endCall(false)}
+}
+
+async function endCall(notify=true){
+ if(notify&&currentFriend&&peer)
+  await sendSignal(currentFriend.user_id,{type:"hangup"});
+
+ if(peer){peer.close();peer=null}
+ if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}
+ $("localVideo").srcObject=null;
+ $("remoteVideo").srcObject=null;
+ $("callScreen").classList.add("hidden");
+ $("acceptCallBtn").classList.add("hidden");
+ incomingCall=null;activeCallId=null;
+}
+
+/* Buttons */
+$("signupBtn").onclick=signup;
+$("loginBtn").onclick=login;
+$("logoutBtn").onclick=logout;
+$("addFriendBtn").onclick=addFriend;
+$("copyBtn").onclick=()=>navigator.clipboard.writeText(profile.chat_id).then(()=>alert("ID copied!"));
+$("sendBtn").onclick=sendMessage;
+$("message").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
+$("recordBtn").onclick=()=>recorder&&recorder.state==="recording"?stopRecording():startRecording();
+$("voiceCallBtn").onclick=()=>startCall("audio");
+$("videoCallBtn").onclick=()=>startCall("video");
+$("endCallBtn").onclick=()=>endCall(true);
+
+/* Install app */
 window.addEventListener("beforeinstallprompt",e=>{
- e.preventDefault();
- deferredPrompt=e;
- document.getElementById("installBtn").style.display="block";
+ e.preventDefault();deferredPrompt=e;
 });
-
-async function installApp(){
+$("installBtn").onclick=async()=>{
  if(deferredPrompt){
   deferredPrompt.prompt();
   await deferredPrompt.userChoice;
   deferredPrompt=null;
  }else{
-  alert("Browser menu se Add to Home Screen ya Install App select karein. Full PWA installation ke liye manifest aur service worker bhi zaroori hain.");
+  alert("Install option browser menu mein check karo. PWA files bhi add honi chahiye.");
  }
+};
+
+if("serviceWorker" in navigator){
+ navigator.serviceWorker.register("./sw.js").catch(console.error);
 }
 
-showApp();
-
+const {data:{session}}=await supabase.auth.getSession();
+if(session){
+ user=session.user;
+ try{await loadProfile()}catch(e){status("authStatus",e.message)}
+}
 </script>
-
 </body>
 </html>

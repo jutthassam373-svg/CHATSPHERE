@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10172f"/>
+      <stop offset="100%" stop-color="#050816"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="#4565ff"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#bd5cff"/>
+      <stop offset="100%" stop-color="#653cff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="115" fill="url(#bg)"/>
+
+  <path d="M105 135 Q105 95 145 95 H315 Q355 95 355 135 V245 Q355 285 315 285 H205 L145 330 V285 Q105 285 105 245Z"
+        fill="url(#purple)"/>
+
+  <path d="M170 220 Q170 180 210 180 H367 Q407 180 407 220 V325 Q407 365 367 365 H285 L225 410 V365 H210 Q170 365 170 325Z"
+        fill="url(#blue)"/>
+
+  <text x="288" y="300" text-anchor="middle"
+        font-family="Arial, sans-serif" font-size="105"
+        font-weight="bold" fill="white">CS</text>
+</svg>
